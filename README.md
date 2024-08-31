@@ -21,7 +21,7 @@ This project demonstrates deploying a simple HTML page inside a Docker container
 </html>
 ```
 
-- This HTML file will be served by the Nginx web server inside a Docker container.
+- This HTML file is the content that will be served by the Nginx web server inside a Docker container.
 
 ---
 
@@ -40,25 +40,25 @@ COPY index.html /usr/share/nginx/html/index.html
 EXPOSE 80
 ```
 
-- This Dockerfile sets up an Nginx server that serves the `index.html` file.
+- This Dockerfile sets up an Nginx server in a Docker container that serves the `index.html` file.
 
 ---
 
-## 3. Build and Push the Docker Image
+**3. Build and Push the Docker Image**
 
-### Build the Docker Image:
+- **Build the Docker Image:**
 
-```bash
-docker build -t gulhaneatharva/demo-html-proj .
-```
+  ```sh
+  docker build -t gulhaneatharva/demo-html-proj .
+  ```
 
-### Push the Docker Image to Docker Hub:
+- **Push the Docker Image to Docker Hub:**
 
-```bash
-docker push gulhaneatharva/demo-html-proj
-```
+  ```sh
+  docker push gulhaneatharva/demo-html-proj
+  ```
 
-- These commands build a Docker image with your HTML file and upload it to Docker Hub.
+- This step creates a Docker image with your HTML file served by Nginx and uploads it to Docker Hub.
 
 ---
 
@@ -116,7 +116,8 @@ kubectl apply -f my-html-pod.yaml
 kubectl apply -f my-html-service.yaml
 ```
 
-- These commands create the Pod and Service in your Kubernetes cluster.
+- This step creates the Pod and the Service in your Kubernetes cluster.
+
 
 ---
 
@@ -124,22 +125,22 @@ kubectl apply -f my-html-service.yaml
 
 ### Check Pod and Service Status:
 
-```bash
-kubectl get pods
-kubectl get services
-```
+  ```sh
+  kubectl get pods
+  kubectl get services
+  ```
 
 ### Check Logs of the Pod:
 
-```bash
-kubectl logs my-html-pod
-```
+  ```sh
+  kubectl logs my-html-pod
+  ```
 
 ### Test Service Internally:
 
-```bash
-kubectl exec -it my-html-pod -- curl http://my-html-service:80
-```
+  ```sh
+  kubectl exec -it my-html-pod -- curl http://my-html-service:80
+  ```
 
 - These steps verify that the Pod is running and the Service is correctly routing traffic to it.
 
@@ -155,7 +156,9 @@ minikube service my-html-service
 
 ### Access the Service via Browser:
 
-- After running the above command, you will receive a URL like `http://127.0.0.1:53968` to access the service locally through your web browser.
+- After running the above command, you will receive a URL like `http://127.0.0.1:XXXXX` to access the service locally through your web browser.
+
+- This step allows you to expose the service on your local machine and access the web page served by Nginx.
 
 ---
 
@@ -175,6 +178,7 @@ minikube service my-html-service
 ```groovy
 pipeline {
     agent any
+
     environment {
         DOCKER_IMAGE = 'gulhaneatharva/demo-html-proj'
         DOCKERFILE_PATH = './Dockerfile'
@@ -182,12 +186,14 @@ pipeline {
         GIT_CREDENTIALS_ID = 'github-private-repo'
         KUBECONFIG_PATH = 'C:\\Users\\AG\\.kube\\config'
     }
+
     stages {
         stage('Checkout Code') {
             steps {
                 git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'https://github.com/AtharvaGulhane/HTML-PODS-DEPLOYMENT.git', branch: 'main'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -195,6 +201,7 @@ pipeline {
                 }
             }
         }
+
         stage('Update Docker Image') {
             steps {
                 script {
@@ -206,6 +213,7 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy to Minikube') {
             steps {
                 script {
@@ -224,6 +232,7 @@ pipeline {
                 }
             }
         }
+
         stage('Verify Deployment') {
             steps {
                 script {
@@ -238,6 +247,7 @@ pipeline {
             }
         }
     }
+
     post {
         success {
             echo 'Pipeline succeeded!'
@@ -251,6 +261,8 @@ pipeline {
     }
 }
 ```
+
+Here's the updated section for the **Manual Verification** part that includes guidance on adding an image for verification:
 
 ---
 
@@ -271,8 +283,22 @@ pipeline {
 ### **5. Verify Deployment:**
   - The pipeline verifies the deployment by listing the pods and services in the Kubernetes cluster.
 
-### **Manual Verification:**
+### **6. Manual Verification:**
   - You can manually verify the service by running `minikube service my-html-service`.
+  - After accessing the service via the URL provided by Minikube, take a screenshot or image of the running HTML page to confirm successful deployment.
+
+#### **Steps to Include the Image:**
+
+1. Access the service through the Minikube URL, which may look something like `http://127.0.0.1:XXXXX`.
+2. Take a screenshot of the browser displaying the HTML page.
+3. Save the image with a descriptive name like `output.png`.
+4. Place this image in the same directory as your Markdown file or reference it via a URL if hosted elsewhere.
+
+5. Update the Markdown to include the image using the following syntax:
+
+![Manual Verification Image](https://github.com/AtharvaGulhane/HTML-PODS-DEPLOYMENT/blob/7cb2369e7facb6a6f3f84e936f9537f252b772de/OUTPUT.png)
+
+- This ensures that anyone reviewing the documentation can visually confirm the successful deployment of the HTML page inside the Kubernetes pod.
 
 ---
 
@@ -293,5 +319,21 @@ pipeline {
 - **DOCKER_CREDENTIALS_ID:** Stores Docker Hub credentials for authentication.
 - **GIT_CREDENTIALS_ID:** Stores GitHub credentials for secure access to the repository.
 - **KUBECONFIG_PATH:** Defines the path to the Kubeconfig file, allowing Jenkins to interact with Minikube.
+
+---
+
+**12. Troubleshooting Tips**
+
+- **Minikube Issues:**
+  - If you encounter problems with Minikube, ensure it’s started with the appropriate configuration for your environment.
+  - Use the command `minikube status` to verify its status.
+
+- **Docker Issues:**
+  - Ensure that Docker Desktop is running and configured correctly.
+  - Verify your Docker Hub credentials and image names in the Jenkins pipeline.
+
+- **Kubernetes Issues:**
+  - Verify that the kubeconfig path is correct and accessible.
+  - Use `kubectl` commands to manually inspect resources if deployment or service creation fails.
 
 ---
