@@ -322,7 +322,7 @@ Here's the updated section for the **Manual Verification** part that includes gu
 
 ---
 
-**12. Troubleshooting Tips**
+## 12. Troubleshooting Tips
 
 - **Minikube Issues:**
   - If you encounter problems with Minikube, ensure it’s started with the appropriate configuration for your environment.
