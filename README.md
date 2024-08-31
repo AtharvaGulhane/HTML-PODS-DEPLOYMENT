@@ -287,15 +287,6 @@ Here's the updated section for the **Manual Verification** part that includes gu
   - You can manually verify the service by running `minikube service my-html-service`.
   - After accessing the service via the URL provided by Minikube, take a screenshot or image of the running HTML page to confirm successful deployment.
 
-#### **Steps to Include the Image:**
-
-1. Access the service through the Minikube URL, which may look something like `http://127.0.0.1:XXXXX`.
-2. Take a screenshot of the browser displaying the HTML page.
-3. Save the image with a descriptive name like `output.png`.
-4. Place this image in the same directory as your Markdown file or reference it via a URL if hosted elsewhere.
-
-5. Update the Markdown to include the image using the following syntax:
-
 ![Manual Verification Image](https://github.com/AtharvaGulhane/HTML-PODS-DEPLOYMENT/blob/7cb2369e7facb6a6f3f84e936f9537f252b772de/OUTPUT.png)
 
 - This ensures that anyone reviewing the documentation can visually confirm the successful deployment of the HTML page inside the Kubernetes pod.
