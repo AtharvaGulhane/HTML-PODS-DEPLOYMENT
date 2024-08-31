@@ -12,15 +12,14 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'https://github.com/AtharvaGulhane/HTML-PODS-DEPLOYMENT.git'
+                git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'https://github.com/AtharvaGulhane/HTML-PODS-DEPLOYMENT.git', branch: 'main'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
-                    def buildImage = docker.build("${DOCKER_IMAGE}", "-f ${DOCKERFILE_PATH} .")
+                    def buildImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}", "-f ${DOCKERFILE_PATH} .")
                 }
             }
         }
@@ -28,10 +27,10 @@ pipeline {
         stage('Update Docker Image') {
             steps {
                 script {
-                    // Log in to Docker Hub and push the Docker image
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
-                        def image = docker.image("${DOCKER_IMAGE}")
-                        image.push('latest')
+                        def image = docker.image("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                        image.push()
+                        image.push('latest')  // Push the "latest" tag as well
                     }
                 }
             }
@@ -53,9 +52,10 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    // Check the status of the pod and service
                     sh 'kubectl get pods'
                     sh 'kubectl get services'
+                    // Optional: Check the status of the deployment rollout
+                    // sh 'kubectl rollout status deployment/my-html-deployment'
                 }
             }
         }
@@ -67,6 +67,9 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed!'
+        }
+        always {
+            cleanWs()  // Clean up the workspace after the pipeline completes
         }
     }
 }
