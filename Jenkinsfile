@@ -37,35 +37,35 @@ pipeline {
         }
 
         stage('Deploy to Minikube') {
-    steps {
-        script {
-            def kubectlCmd = ''
+            steps {
+                script {
+                    def kubectlCmd = 'kubectl'
 
-            // Determine the correct shell command based on the environment
-            if (isUnix()) {
-                kubectlCmd = 'kubectl'
-            } else {
-                // If on Windows, use WSL to run kubectl
-                kubectlCmd = 'wsl kubectl'
+                    if (isUnix()) {
+                        // Unix-like environments
+                        sh "${kubectlCmd} config use-context minikube"
+                        sh "${kubectlCmd} apply -f my-html-pod.yaml"
+                        sh "${kubectlCmd} apply -f my-html-service.yaml"
+                    } else {
+                        // Windows environment using cmd or PowerShell
+                        bat "${kubectlCmd} config use-context minikube"
+                        bat "${kubectlCmd} apply -f my-html-pod.yaml"
+                        bat "${kubectlCmd} apply -f my-html-service.yaml"
+                    }
+                }
             }
-
-            // Set up kubectl context to use Minikube
-            sh "${kubectlCmd} config use-context minikube"
-
-            // Apply Kubernetes configuration files
-            sh "${kubectlCmd} apply -f my-html-pod.yaml"
-            sh "${kubectlCmd} apply -f my-html-service.yaml"
         }
-    }
-}
 
         stage('Verify Deployment') {
             steps {
                 script {
-                    sh 'kubectl get pods'
-                    sh 'kubectl get services'
-                    // Optional: Check the status of the deployment rollout
-                    // sh 'kubectl rollout status deployment/my-html-deployment'
+                    if (isUnix()) {
+                        sh 'kubectl get pods'
+                        sh 'kubectl get services'
+                    } else {
+                        bat 'kubectl get pods'
+                        bat 'kubectl get services'
+                    }
                 }
             }
         }
