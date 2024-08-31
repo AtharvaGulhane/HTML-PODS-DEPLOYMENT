@@ -37,17 +37,27 @@ pipeline {
         }
 
         stage('Deploy to Minikube') {
-            steps {
-                script {
-                    // Set up kubectl context to use Minikube
-                    sh 'kubectl config use-context minikube'
+    steps {
+        script {
+            def kubectlCmd = ''
 
-                    // Apply Kubernetes configuration files
-                    sh 'kubectl apply -f my-html-pod.yaml'
-                    sh 'kubectl apply -f my-html-service.yaml'
-                }
+            // Determine the correct shell command based on the environment
+            if (isUnix()) {
+                kubectlCmd = 'kubectl'
+            } else {
+                // If on Windows, use WSL to run kubectl
+                kubectlCmd = 'wsl kubectl'
             }
+
+            // Set up kubectl context to use Minikube
+            sh "${kubectlCmd} config use-context minikube"
+
+            // Apply Kubernetes configuration files
+            sh "${kubectlCmd} apply -f my-html-pod.yaml"
+            sh "${kubectlCmd} apply -f my-html-service.yaml"
         }
+    }
+}
 
         stage('Verify Deployment') {
             steps {
